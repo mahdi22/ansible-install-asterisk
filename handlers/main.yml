@@ -1,0 +1,57 @@
+---
+# handlers file for AsteriskInstall
+- name: reload firewalld
+  systemd:
+    name: firewalld
+    state: reloaded
+    enabled: yes
+
+- name: restart asterisk server
+  service:
+    name: asterisk
+    state: restarted
+    enabled: yes
+
+- name: restart fail2ban
+  systemd:
+    name: fail2ban
+    state: restarted
+    enabled: yes
+
+- name: Apply Selinux File context to Asterisk File
+  command: restorecon -irv "{{ item }}"
+  with_items:
+    - /etc/asterisk
+    - /usr/lib64/asterisk/modules
+    - /var/lib/asterisk
+    - /var/spool/asterisk
+    - /var/run/asterisk
+    - /var/log/asterisk
+
+- name: Install Asterisk Packages
+  command: "{{ item }}"
+  with_items:
+    - ./configure --libdir=/usr/lib64
+    - make
+    - make install
+    - make samples
+    - make config
+  args:
+    chdir: "{{ asterisk_directory.stdout }}"
+
+- name: Install Dahdi current Linux
+  command: "{{ item }}"
+  with_items:
+    - make
+    - make install
+    - make config
+  args:
+    chdir: "{{ dahdi_directory.stdout }}"
+
+- name: Install Libpri 1.6 Package
+  command: "{{ item }}"
+  with_items:
+    - make all
+    - make install
+  args:
+    chdir: "{{ libpri_directory.stdout }}"

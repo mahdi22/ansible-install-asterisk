@@ -1,0 +1,48 @@
+- name: Firewall Star and enable firewalld
+  systemd:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: Firewall Copie asterisk  service file config
+  template:
+    src: firewall.xml.j2
+    dest: /usr/lib/firewalld/services/asterisk.xml
+  register: putfirewallfile
+  notify: reload firewalld
+
+- name:  Firewall get default Zone
+  command: firewall-cmd --get-default-zone
+  register: default_zone
+  failed_when: False
+  changed_when: False
+  #when: putfirewallfile.changed
+
+- debug:
+    msg: "Firewall default zone is {{ default_zone.stdout }}"
+
+- meta: flush_handlers
+
+- name: Firewall enable Asterisk service on {{ default_zone.stdout }} zone
+  firewalld:
+    zone: "{{ default_zone.stdout }}"
+    service: asterisk
+    permanent: yes
+    state: enabled
+  notify: reload firewalld
+- name: Configure fail2ban for SSH and Asterisk
+  ini_file:
+    path: "/etc/fail2ban/jail.conf"
+    section: "{{ item.section }}"
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+    - { section: "asterisk", option: "enabled", value: "true"}
+    - { section: "asterisk", option: "bantime", value: "7200"}
+    - { section: "asterisk", option: "findtime", value: "1h"}
+    - { section: "asterisk", option: "maxretry", value: "10"}
+    - { section: "sshd", option: "enabled", value: "true"}
+    - { section: "sshd", option: "bantime", value: "7200"}
+    - { section: "sshd", option: "findtime", value: "1h"}
+    - { section: "sshd", option: "maxretry", value: "10"}
+  notify: restart fail2ban

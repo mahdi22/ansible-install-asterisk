@@ -1,0 +1,8 @@
+---
+# tasks file for AsteriskInstall
+- include_tasks: install_required_packages.yml
+- include_tasks: configure_fail2ban_firewalld.yml
+- include_tasks: install_dahdi.yml
+- include_tasks: install_asterisk.yml
+- include_tasks: install_libpri.yml
+- include_tasks: configure.yml

@@ -1,0 +1,8 @@
+[asterisk-connector]
+Description     = MS SQL connection to {{ SQL_DATABASE }} database
+Driver          = FreeTDS
+Database        = {{ SQL_DATABASE }}
+Server          = {{ SQL_HOST }}
+Trace           = No
+TDS_Version     = 7.0
+Port            = 1433

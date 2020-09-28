@@ -1,0 +1,21 @@
+- name: Download and Extract Libpri 1.6 Package
+  unarchive:
+    src: "{{ LIBPRI_PACKAGE }}"
+    dest: "{{ SOURCE_DIR }}"
+    remote_src: yes
+  notify:
+    - Install Libpri 1.6 Package
+    - restart asterisk server
+  register: downloadlibpri
+
+- name: Get Libpri Package Source Dir
+  command: find "{{ SOURCE_DIR }}" -type d -name "libpri*"
+  register: libpri_directory
+  failed_when: False
+  changed_when: False
+  #when: downloadlibpri.changed
+
+- debug:
+    msg: "Libpri Package directory is: {{ libpri_directory.stdout }}"
+
+- meta: flush_handlers

@@ -1,0 +1,19 @@
+- name: Download and Extract Asterisk
+  unarchive:
+    src: "{{ ASTERISK_PACKAGE }}"
+    dest: "{{ SOURCE_DIR }}"
+    remote_src: yes
+  notify: Install Asterisk Packages
+  register: downloadast
+
+- name: Get Asterisk Source Directory
+  command: find "{{ SOURCE_DIR }}" -type d -name "asterisk-13*"
+  register: asterisk_directory
+  failed_when: False
+  changed_when: False
+  #when: downloadast.changed
+
+- meta: flush_handlers
+
+- debug:
+    msg: "Asterisk directory name is {{ asterisk_directory.stdout }}"

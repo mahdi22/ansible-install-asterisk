@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service version="1.0">
+  <short>asterisk</short>
+  <description>Asterisk is a software implementation of a telephone private branch exchange (PBX).</description>
+  <port protocol="udp" port="{{ RTP_RANGE }}"/>
+  <port protocol="udp" port="{{ IAX_PORT }}"/>
+  <port protocol="udp" port="2727"/>
+  <port protocol="udp" port="{{ SIP_PORT }}"/>
+</service>

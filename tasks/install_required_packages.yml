@@ -1,0 +1,20 @@
+- name: Install epel repo
+  yum:
+    name: epel-release
+    state: present
+
+- name: Update system
+  yum:
+    name: "*"
+    state: latest
+  register: allupdate
+
+- name: Reboot machine after update and wait reconnect
+  reboot:
+    reboot_timeout: 3600
+  when: allupdate is changed
+
+- name: Install required packages
+  yum:
+    name: "{{ packages_required }}"
+    state: present
