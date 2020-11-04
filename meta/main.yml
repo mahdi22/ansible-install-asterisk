@@ -1,7 +1,7 @@
 galaxy_info:
   author: Mahdi Bourbita
   role_name: install_asterisk
-  description: Install Asterisk 13 from source on CentOS 7
+  description: Install Asterisk 13 from source on RedHat/CentOS 7 and RedHat/CentOS 8
   #company: your company (optional)
 
   # If the issue tracker for your role is not on github, uncomment the
