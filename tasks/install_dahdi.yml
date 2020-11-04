@@ -6,7 +6,7 @@
 
 - name: set fact if dahdi installed
   set_fact:
-    dahdi_installed: false
+    dahdi_installed: true
   when: check_dahdi.stdout is search('/usr/sbin/dahdi_cfg')
 
 - name: Install dahdi process
@@ -37,4 +37,4 @@
       chdir: "{{ SOURCE_DIR }}{{ dahdi_archive_contents.files[0] }}"
   when:
     - check_dahdi.rc == 0
-    - dahdi_installed|bool == false
+    - not dahdi_installed
