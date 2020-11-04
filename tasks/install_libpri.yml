@@ -3,19 +3,20 @@
     src: "{{ LIBPRI_PACKAGE }}"
     dest: "{{ SOURCE_DIR }}"
     remote_src: yes
-  notify:
-    - Install Libpri 1.6 Package
-    - restart asterisk server
-  register: downloadlibpri
-
-- name: Get Libpri Package Source Dir
-  command: find "{{ SOURCE_DIR }}" -type d -name "libpri*"
-  register: libpri_directory
-  failed_when: False
-  changed_when: False
-  #when: downloadlibpri.changed
+    list_files: yes
+  register: libpri_archive_contents
 
 - debug:
-    msg: "Libpri Package directory is: {{ libpri_directory.stdout }}"
+    msg: "Libpri Package directory path is: {{ SOURCE_DIR }}{{ libpri_archive_contents.files[0] }}"
+
+- name: Install Libpri 1.6 Package
+  command: "{{ item }}"
+  with_items:
+    - make all
+    - make install
+  args:
+    chdir: "{{ SOURCE_DIR }}{{ libpri_archive_contents.files[0] }}"
+  notify: restart asterisk server
+  when: libpri_archive_contents.files[0] is search ('libpri')
 
 - meta: flush_handlers

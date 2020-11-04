@@ -1,6 +1,13 @@
 ---
 # tasks file for AsteriskInstall
-- include_tasks: install_required_packages.yml
+- name: include distribution dependency variables
+  include_vars: "{{ item }}"
+  with_items:
+    - "{{ ansible_distribution_file_variety }}-{{ ansible_distribution_major_version }}.yml"
+- name: Install required packages
+  include_tasks: "{{ item }}"
+  with_items:
+    - "{{ ansible_distribution_file_variety }}-{{ ansible_distribution_major_version }}--install_required_packages.yml"
 - include_tasks: configure_fail2ban_firewalld.yml
 - include_tasks: install_dahdi.yml
 - include_tasks: install_asterisk.yml

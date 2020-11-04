@@ -1,0 +1,45 @@
+---
+# vars file for AsteriskInstall
+packages_required:
+    - kernel-headers 
+    - gcc 
+    - gcc-c++ 
+    - cpp 
+    - ncurses 
+    - ncurses-devel 
+    - libxml2 
+    - libxml2-devel 
+    - sqlite 
+    - sqlite-devel 
+    - openssl-devel 
+    - newt-devel 
+    - kernel-devel
+    - libuuid-devel 
+    - net-snmp-devel
+    - bzip2
+    - jansson-devel
+    - make
+    - unixODBC 
+    - unixODBC-devel
+    - freetds
+    - freetds-devel 
+    - libtool-ltdl 
+    - libtool-ltdl-devel
+    - postgresql-odbc
+    - mysql-connector-odbc
+    - wget
+    - binutils-devel
+    - libedit 
+    - dmidecode
+    - patch
+    - automake
+    - autoconf 
+    - m4 
+    - perl
+    - libtool
+    - policycoreutils-python-utils
+    - fail2ban-firewalld
+    - fail2ban
+    - fail2ban-systemd
+    - wget
+    - gtk2-devel

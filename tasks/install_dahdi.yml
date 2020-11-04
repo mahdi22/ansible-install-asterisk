@@ -1,24 +1,40 @@
-- name: Create source directory
-  file:
-    path: "{{ SOURCE_DIR }}"
-    state: directory
+- name: check if dahdi is installed
+  command: whereis dahdi_cfg
+  changed_when: false
+  ignore_errors: true
+  register: check_dahdi
 
-- name: Download and Extract dahdi linux current package
-  unarchive:
-    src: "{{ DAHDI_CURRENT_PACKAGE }}"
-    dest: "{{ SOURCE_DIR }}"
-    remote_src: yes
-  notify: Install Dahdi current Linux
-  register: downloaddahdi
+- name: set fact if dahdi installed
+  set_fact:
+    dahdi_installed: false
+  when: check_dahdi.stdout is search('/usr/sbin/dahdi_cfg')
 
-- name: Get dahdi package directory name
-  command: find "{{ SOURCE_DIR }}" -type d -name "dahdi-linux-complete-*"
-  register: dahdi_directory
-  changed_when: False
-  failed_when: False
-  #when: downloaddahdi.changed
+- name: Install dahdi process
+  block:
+  - name: Create source directory
+    file:
+      path: "{{ SOURCE_DIR }}"
+      state: directory
 
-- meta: flush_handlers
+  - name: Download and Extract dahdi linux current package
+    unarchive:
+      src: "{{ DAHDI_CURRENT_PACKAGE }}"
+      dest: "{{ SOURCE_DIR }}"
+      remote_src: yes
+      list_files: yes
+    register: dahdi_archive_contents
 
-- debug:
-    msg: "Dahdi directory name is {{ dahdi_directory.stdout }}"
+  - debug:
+      msg: "Dahdi directory path is {{ SOURCE_DIR }}{{ dahdi_archive_contents.files[0] }}"
+
+  - name: Install Dahdi current Linux
+    command: "{{ item }}"
+    with_items:
+      - make
+      - make install
+      - make config
+    args:
+      chdir: "{{ SOURCE_DIR }}{{ dahdi_archive_contents.files[0] }}"
+  when:
+    - check_dahdi.rc == 0
+    - dahdi_installed|bool == false
