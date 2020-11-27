@@ -1,18 +1,40 @@
 <h1>ansible-install-asterisk</h1>
-This is an ansible role to install Asterisk 13 tested on the GNU/Linux Centos 7.7 distribution, installed from cd image version minimal install.
+This is an ansible role to install Asterisk on Redhat/CentOS 7 and 8 distribution, installed from cd image version minimal install.Specifically, the responsibilities of this role are to:
+
+- Update server and reboot
+- Install Asterisk dependency
+- Install Dahdi package from source
+- Install Asterisk Package from source
+- Install libpri from source
+- Configure Fail2ban
+- Condigure Firewalld
+- Configure Selinux
+- Configure Asterisk CDR ODBC (optional)
+- Configure Asterisk
 
 # Requirements
 
 - CentOS 7.x
 - CentOS 8.x
 - Ansible >= 2.7
+- Asterisk 12
+- Asterisk 13
+- Asterisk 14
 
 # Installation
 
 ansible-galaxy install mahdi22.ansible_install_asterisk
 
 # Role Variables
-
+file: defaults/main.yml
+Set configure_cdr_odbc: true to configure asterisk CDR ODBC. Only ODBC supported with this role:
+  - Mysql/MariaDB
+  - MSSQL
+Set configure_cdr_odbc: false to not configure asterisk CDR ODBC.
+Example:
+```yaml
+configure_cdr_odbc: true
+```
 file: vars/main.yml
 * line 57
   - variable name: Driver
@@ -38,5 +60,8 @@ file: vars/main.yml
 ```sh
 - hosts: servers
   roles:
-    - role: mahdi22.install_asterisk
+    - role: mahdi22.asterisk
       become: yes
+```
+# Tests
+This role was tested on Redhat end CentOS verion 7 and 8

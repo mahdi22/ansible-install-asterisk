@@ -1,53 +1,56 @@
-- name: Configure ODBC Drive /etc/odbcinst.ini
-  ini_file:
-    path: "/etc/odbcinst.ini"
-    create: yes
-    section: "{{ item.section }}"
-    option: "{{ item.option }}"
-    value: "{{ item.value }}"
-  with_items:
-    - { section: "MySQL", option: "Description", value: "ODBC for MySQL" }
-    - { section: "MySQL", option: "Driver", value: "/usr/lib/libmyodbc5w.so" }
-    - { section: "MySQL", option: "Setup", value: "/usr/lib/libodbcmyS.so" }
-    - { section: "MySQL", option: "Driver64", value: "/usr/lib64/libmyodbc5w.so" }
-    - { section: "MySQL", option: "Setup64", value: "/usr/lib64/libodbcmyS.so" }
-    - { section: "MySQL", option: "FileUsage", value: "1" }
-    - { section: "FreeTDS", option: "Description", value: "FreeTDS ODBC driver for MSSQL" }
-    - { section: "FreeTDS", option: "Driver", value: "/usr/lib64/libtdsodbc.so" }
-    - { section: "FreeTDS", option: "Setup", value: "/usr/lib64/libtdsS.so" }
-    - { section: "FreeTDS", option: "FileUsage", value: "1" }
+- name: Configure asterisk CDR ODBC
+  block:
+  - name: Configure ODBC Drive /etc/odbcinst.ini
+    ini_file:
+      path: "/etc/odbcinst.ini"
+      create: yes
+      section: "{{ item.section }}"
+      option: "{{ item.option }}"
+      value: "{{ item.value }}"
+    with_items:
+      - { section: "MySQL", option: "Description", value: "ODBC for MySQL" }
+      - { section: "MySQL", option: "Driver", value: "/usr/lib/libmyodbc5w.so" }
+      - { section: "MySQL", option: "Setup", value: "/usr/lib/libodbcmyS.so" }
+      - { section: "MySQL", option: "Driver64", value: "/usr/lib64/libmyodbc5w.so" }
+      - { section: "MySQL", option: "Setup64", value: "/usr/lib64/libodbcmyS.so" }
+      - { section: "MySQL", option: "FileUsage", value: "1" }
+      - { section: "FreeTDS", option: "Description", value: "FreeTDS ODBC driver for MSSQL" }
+      - { section: "FreeTDS", option: "Driver", value: "/usr/lib64/libtdsodbc.so" }
+      - { section: "FreeTDS", option: "Setup", value: "/usr/lib64/libtdsS.so" }
+      - { section: "FreeTDS", option: "FileUsage", value: "1" }
 
-- name: Configure odbc.ini fore Driver Mysql
-  template:
-    src: odbc_mysql.ini.j2
-    dest: /etc/odbc.ini
-  when: Driver == "MYSQL"
+  - name: Configure odbc.ini fore Driver Mysql
+    template:
+      src: odbc_mysql.ini.j2
+      dest: /etc/odbc.ini
+    when: Driver == "MYSQL"
 
-- name: Configure odbc.ini fore Driver MSsql
-  template:
-    src: odbc_mssql.ini.j2
-    dest: /etc/odbc.ini
-  when: Driver  == "MSSQL"
+  - name: Configure odbc.ini fore Driver MSsql
+    template:
+      src: odbc_mssql.ini.j2
+      dest: /etc/odbc.ini
+    when: Driver  == "MSSQL"
 
-- name: Configure cdr_odbc.conf
-  ini_file:
-    path: "/etc/asterisk/cdr_odbc.conf"
-    create: yes
-    section: "global"
-    option: "{{ item.option }}"
-    value: "{{ item.value }}"
-  with_items:
-    - { option: "dsn", value: "asterisk-connector" }
-    - { option: "loguniqueid", value: "yes" }
-    - { option: "dispositionstring", value: "yes" }
-    - { option: "table", value: "{{ SQL_TABLE }}" }
-    - { option: "usegmtime", value: "no" }
-    - { option: "hrtime", value: "yes" }
+  - name: Configure cdr_odbc.conf
+    ini_file:
+      path: "/etc/asterisk/cdr_odbc.conf"
+      create: yes
+      section: "global"
+      option: "{{ item.option }}"
+      value: "{{ item.value }}"
+    with_items:
+      - { option: "dsn", value: "asterisk-connector" }
+      - { option: "loguniqueid", value: "yes" }
+      - { option: "dispositionstring", value: "yes" }
+      - { option: "table", value: "{{ SQL_TABLE }}" }
+      - { option: "usegmtime", value: "no" }
+      - { option: "hrtime", value: "yes" }
 
-- name: Configure res_odbc.conf
-  template:
-    src: res_odbc.conf.j2
-    dest: /etc/asterisk/res_odbc.conf
+  - name: Configure res_odbc.conf
+    template:
+      src: res_odbc.conf.j2
+      dest: /etc/asterisk/res_odbc.conf
+  when: configure_cdr_odbc
 
 - name: Disable srvlookup
   ini_file:

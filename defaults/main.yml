@@ -1,3 +1,4 @@
 ---
 # defaults file for AsteriskInstall
-ahdi_installed: false
+dahdi_installed: false
+configure_cdr_odbc: true
